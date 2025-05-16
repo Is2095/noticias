@@ -15,6 +15,7 @@
   "license": "ISC",
   "description": "API RESTful en TypeScript y Express que actúa como proxy entre los feeds RSS del diario El País y los consumidores de la API",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongoose": "^8.15.0",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.15.18",
