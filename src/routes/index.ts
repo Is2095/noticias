@@ -1,6 +1,7 @@
 import cors from 'cors';
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import morgan from 'morgan';
+import routerNoticias from './noticias.routes';
 
 export const configuracionRutas = (app: Application): void => {
   app.disable('x-powered-by');
@@ -18,7 +19,5 @@ export const configuracionRutas = (app: Application): void => {
     next();
   });
 
-  app.get('/', (req: Request, res: Response) => {
-    res.json({ message: 'funciona' });
-  });
+  app.use('/', routerNoticias);
 };
