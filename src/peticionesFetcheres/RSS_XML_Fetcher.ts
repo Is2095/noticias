@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { INoticiasXml } from '../interfaces_types/datosXml.interface';
+import ClienteError from '../utils/erroresPersonalizados/ErrorParaClienteGeneral';
 
 const pedirDatosRSSCMLElPais = async (url: string): Promise<INoticiasXml> => {
   const parser = new XMLParser();
@@ -14,12 +15,14 @@ const pedirDatosRSSCMLElPais = async (url: string): Promise<INoticiasXml> => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error de Axios:', error.message);
+      throw new ClienteError("Error inesperando al buscar la información -", 500)
     } else if (error instanceof Error) {
       console.error('Error general:', error.message);
+      throw new ClienteError("Error inesperando al buscar la información", 500)
     } else {
       console.error('Error desconocido', error);
+      throw new ClienteError("Error desconocido", 500)
     }
-    throw error;
   }
 };
 
