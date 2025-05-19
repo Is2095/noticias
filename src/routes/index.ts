@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import { ErrorClienteError } from '../interfaces_types/errorClienteError.type';
 import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 import routerNoticias from './noticias.routes';
+import swaggerUI from 'swagger-ui-express'
+import specs from '../swagger/swagger';
 
 export const configuracionRutas = (app: Application): void => {
   app.disable('x-powered-by');
@@ -20,6 +22,8 @@ export const configuracionRutas = (app: Application): void => {
 
     next();
   });
+
+  app.use('/doc', swaggerUI.serve, swaggerUI.setup(specs))
 
   app.use('/', routerNoticias);
   app.use((err: ErrorClienteError, _req: Request, res: Response, _next: NextFunction) => {
