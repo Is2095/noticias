@@ -1,6 +1,8 @@
 import cors from 'cors';
-import express, { Application } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
+import { ErrorClienteError } from '../interfaces_types/errorClienteError.type';
+import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 import routerNoticias from './noticias.routes';
 
 export const configuracionRutas = (app: Application): void => {
@@ -20,4 +22,9 @@ export const configuracionRutas = (app: Application): void => {
   });
 
   app.use('/', routerNoticias);
+  app.use((err: ErrorClienteError, _req: Request, res: Response, _next: NextFunction) => {
+    
+    const statusCode = err.statusCode != null ? err.statusCode : 500;
+    RespuestaAlFrontend(res, statusCode, true, err.message, null);
+  });
 };
