@@ -1,8 +1,10 @@
 import env from './config/manejo_VE';
+import connectMongo from './database/db_connect';
 import app from './server';
 
 const levantarServido = async () => {
   try {
+    await connectMongo();
     app.listen(env.port, (): void => {
       console.log(`Servidor levantado en http://localhost: ${env.port}`);
     });
