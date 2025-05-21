@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import NoticiasController from '../controllers/noticias.controllers';
+import ActualizarNoticiasController from '../controllers/actualizarNoticias.controllers';
 
 const router: Router = Router();
-const noticiasController = new NoticiasController();
+const actualizarNoticiasController = new ActualizarNoticiasController();
 
-router.get('/news', noticiasController.buscarNoticiasNuevas);
-router.get('/news/search', noticiasController.buscarNoticiaPorPalabra);
-router.get('/news/:id', noticiasController.buscarNoticiaPorId);
+router.get('/news', actualizarNoticiasController.buscarNoticiasNuevas);
+router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
+router.get('/news/:id', actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
  * /news/fetch:
@@ -45,7 +45,7 @@ router.get('/news/:id', noticiasController.buscarNoticiaPorId);
  *                   nullable: true
  *                   example: null
  */
-router.post('/news/fetch', noticiasController.cargarNoticiasNuevas);
-router.delete('/news/:id', noticiasController.eliminarNoticiaPorId);
+router.post('/news/fetch', actualizarNoticiasController.cargarNoticiasNuevas);
+router.delete('/news/:id', actualizarNoticiasController.eliminarNoticiaPorId);
 
 export default router;

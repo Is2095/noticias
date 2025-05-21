@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { NoticiasService } from '../services/noticias.services';
+import { BuscarNoticiasNuevasService } from '../services/buscarNoticiasNuevas.services';
 import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 
-class NoticiasController {
+class ActualizarNoticiasController {
   public cargarNoticiasNuevas = async (req: Request, res: Response): Promise<void> => {
     const url = req.body.url;
-    const noticiasService = new NoticiasService();
-    const json = await noticiasService.buscarNoticiasNuevas(url);
+    const buscarNoticiasNuevasService = new BuscarNoticiasNuevasService();
+    const json = await buscarNoticiasNuevasService.buscarNoticiasNuevas(url);
     const respuesta = {
       page: 1,
       limit: 20,
@@ -34,4 +34,4 @@ class NoticiasController {
   };
 }
 
-export default NoticiasController;
+export default ActualizarNoticiasController;

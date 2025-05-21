@@ -3,7 +3,7 @@ import pedirDatosRSSCMLElPais from '../peticionesFetcheres/RSS_XML_Fetcher';
 import enriquecerDatos from '../utils/enriquecerData';
 import normalizarDatos from '../utils/normalizarData';
 
-export class NoticiasService {
+export class BuscarNoticiasNuevasService {
   public async buscarNoticiasNuevas(url: string): Promise<IDatosEnriquecidos[]> {
     const respuesta = await pedirDatosRSSCMLElPais(url);
 
