@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { INoticiasXml } from '../interfaces_types/datosXml.interface';
-import ClienteError from '../utils/erroresPersonalizados/ErrorParaClienteGeneral';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
 const pedirDatosRSSCMLElPais = async (url: string): Promise<INoticiasXml> => {
   const parser = new XMLParser();
