@@ -36,9 +36,8 @@ export const configuracionRutas = (app: Application): void => {
       res: Response,
       _next: NextFunction
     ) => {
-      // const errors = err.message;
-      if (err instanceof mongoose.Error.ValidatorError) {
-        ManejadorErroresMongoose(err, err.value, res);
+      if (err instanceof mongoose.Error.ValidationError) {
+        ManejadorErroresMongoose(err, err.errors, res);
       }
       if (err instanceof MongooseError || err instanceof MongoError) {
         ManejadorErroresMongoose(err, {}, res);

@@ -8,21 +8,25 @@ const enriquecerDatos = (
 ): IDatosEnriquecidos[] => {
   const noticiasEnriquecidas = datos.map((item) => ({
     ...item,
-    fechaYHoraIngestion: new Date().toLocaleString(),
+    fechaYHoraIngestion: new Date(),
     fuente: urlFuenteInfo,
     identificadorUnico: uuidv4(),
     palabrasClaves: extraerPalabrasClaves(item.titulo, item.descripcionNoticia),
   }));
+
+  console.log(new Date() , " hora actual");
+  
   return noticiasEnriquecidas;
 };
 
 const extraerPalabrasClaves = (textoTitulo: string, textoDescripcion: string) => {
-  const palabrasTitulo = textoTitulo.split(' ');
+  
+  const palabrasTitulo = textoTitulo.split(/\s+/);
   const primerasPalabrasTitulo = palabrasTitulo.slice(0, 3).join(' ').toLowerCase();
   const restoTitulo = palabrasTitulo.slice(3);
   const restoTextoFiltrado = restoTitulo.map((p) => p.trim().replace(/[.,;!?]+$/, ''));
 
-  const palabrasDescripcion = textoDescripcion.split(' ');
+  const palabrasDescripcion = textoDescripcion.split(/\s+/);
   const primerasPalabrasDescripcion = palabrasDescripcion.slice(0, 3).join(' ').toLowerCase();
   const restoDescripcion = palabrasDescripcion.slice(3);
   const restoDescripcionFiltrado = restoDescripcion.map((p) => p.trim().replace(/[.,;!?]+$/, ''));

@@ -1,5 +1,5 @@
 import env from './config/manejo_VE';
-import connectMongo from './database/db_connect';
+import connectMongo from './database/coneccionDBMongo/db_connect';
 import app from './server';
 
 const levantarServido = async () => {

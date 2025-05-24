@@ -6,7 +6,7 @@ type palabrasClaves = {
 };
 
 export interface IDatosEnriquecidos extends IDatosNormalizados {
-  fechaYHoraIngestion: string;
+  fechaYHoraIngestion: Date;
   fuente: string;
   identificadorUnico: string;
   palabrasClaves: palabrasClaves;

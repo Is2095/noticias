@@ -4,6 +4,7 @@ import ActualizarNoticiasController from '../controllers/actualizarNoticias.cont
 const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
 
+// router.post('/news/pruebas', actualizarNoticiasController.pruebas)
 router.get('/news', actualizarNoticiasController.buscarNoticiasNuevas);
 router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
 router.get('/news/:id', actualizarNoticiasController.buscarNoticiaPorId);
