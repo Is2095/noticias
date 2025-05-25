@@ -1,59 +1,49 @@
-import NoticiasModel from '../database/modelo_schema/noticias.modelo';
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
+import NoticiasRepository from '../noticias.repository';
 
 const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
+  const noticiasRepository = new NoticiasRepository();
   console.log('borrando noticias de un día de antigüedad');
 
   // borrado de noticias con un día de antigüedad
   const ahora = new Date();
   const haceUnDía = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+  const borradoNoticiasAntiguas = await noticiasRepository.borrarNoticiasAntiguas(haceUnDía);
 
-  const borradoNoticiasAntiguas = await NoticiasModel.deleteMany({
-    fechaYHoraIngestion: { $lt: haceUnDía },
-  });
-
-  if (borradoNoticiasAntiguas.deletedCount > 0) {
-    console.log('Se borraron noticias antigüas: ', borradoNoticiasAntiguas.deletedCount);
-  } else {
-    console.log('No se encontraron noticias antigüas');
-  }
+  console.log(
+    borradoNoticiasAntiguas.deletedCount > 0
+      ? `Se borraron noticias antigüas: ${borradoNoticiasAntiguas.deletedCount}`
+      : 'No se encontraron noticias antigüas'
+  );
 
   console.log('guardando ');
 
-  // se obtienen el index de las noticiasa y se comparar con las nuevas para descartar noticias nuevas
+  // se obtienen los parámetros para hacer las combinaciones para la comparación con el Index
   const combinacionesIndex = datosAGuardar.map((noticia) => ({
     tituloPais: noticia.tituloPais,
     titulo: noticia.titulo,
     enlaceNoticia: noticia.enlaceNoticia,
     fechaPublicacion: noticia.fechaPublicacion,
   }));
+  
+  // se obtienen los Index existentes en base de datos
+  const identificadoresExistentes = await noticiasRepository.obtenerIdentificadoresExistentes(combinacionesIndex);
 
-  const identificadoresExistentes = await NoticiasModel.find(
-    {
-      $or: combinacionesIndex,
-    },
-    { tituloPais: 1, titulo: 1, enlaceNoticia: 1, fechaPublicacion: 1 }
-  ).lean();
-
+  // se crea un Set todos los datos de los parámetros del Index
   const existentesSet = new Set(
     identificadoresExistentes.map(
       (n) => `${n.tituloPais}|${n.titulo}|${n.enlaceNoticia}|${n.fechaPublicacion}`
     )
   );
 
+  // se filtran las noticias entrantes que no estén en el set
   const noticiasFiltrasParaGuardar = datosAGuardar.filter((noticia) => {
     const clave = `${noticia.tituloPais}|${noticia.titulo}|${noticia.enlaceNoticia}|${noticia.fechaPublicacion}`;
     return !existentesSet.has(clave);
   });
 
-  // filtradas las noticias se guardan en base de datos
-  const resultado = [];
-  for (const noticia of noticiasFiltrasParaGuardar) {
-    const model = new NoticiasModel(noticia);
-    const doc: IDatosEnriquecidos | null = await model.save();
-    console.log('noticias guardadas en base de datos');
-    resultado.push(doc);
-  }
+  // se guardan las noticias filtradas en base de datos
+  const resultado = await noticiasRepository.guardarNoticias(noticiasFiltrasParaGuardar);
   return resultado;
 };
 

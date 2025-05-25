@@ -13,8 +13,6 @@ const enriquecerDatos = (
     identificadorUnico: uuidv4(),
     palabrasClaves: extraerPalabrasClaves(item.titulo, item.descripcionNoticia),
   }));
-
-  console.log(new Date() , " hora actual");
   
   return noticiasEnriquecidas;
 };
