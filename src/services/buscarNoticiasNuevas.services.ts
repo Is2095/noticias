@@ -1,5 +1,6 @@
 // import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
+import logger from '../logger';
 import pedirDatosRSSCMLElPais from '../peticionesFetcheres/RSS_XML_Fetcher';
 import enriquecerDatos from '../utils/enriquecerData';
 import normalizarDatos from '../utils/normalizarData';
@@ -9,16 +10,15 @@ export class BuscarNoticiasNuevasService {
   
   public async buscarNoticiasNuevas(url: string): Promise<IDatosEnriquecidos[]> {
 
-    console.log('buscando info');
+    logger.info('buscando noticias RSS XML');
     const respuesta = await pedirDatosRSSCMLElPais(url);
     
-    console.log('normalizando info');
+    logger.info('normalizando la información');
     const respuestaNormalizada = normalizarDatos(respuesta);
     
-    console.log('enriquesiendo info');
+    logger.info('enriquesiendo la información');
     const respuestaEnriquecida = enriquecerDatos(respuestaNormalizada, url);
     
-    console.log('guardando info');
     const resultadoGuardadoNoticias = await guardarNoticiasNuevasDB(respuestaEnriquecida);
 
     return resultadoGuardadoNoticias;

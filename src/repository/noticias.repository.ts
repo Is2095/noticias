@@ -1,5 +1,5 @@
-import NoticiasModel from './database/modelo_schema/noticias.modelo';
-import { IDatosEnriquecidos } from './interfaces_types/noticiasEnriquecidas.interface';
+import NoticiasModel from '../database/modelo_schema/noticias.modelo';
+import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
 
 class NoticiasRepository {
   async borrarNoticiasAntiguas(fechaLimite: Date) {

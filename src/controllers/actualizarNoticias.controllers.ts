@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { BuscarNoticiasNuevasService } from '../services/buscarNoticiasNuevas.services';
 // import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
-import guardarNoticiasNuevasDB from '../services/guardarNoticiasNuevasDB.service';
+// import guardarNoticiasNuevasDB from '../services/guardarNoticiasNuevasDB.service';
+import logger from '../logger';
 
 class ActualizarNoticiasController {
   public cargarNoticiasNuevas = async (req: Request, res: Response): Promise<void> => {
@@ -36,8 +37,10 @@ class ActualizarNoticiasController {
 
   public pruebas = async (req: Request, res: Response): Promise<void> => {
     const datos = req.body;
-    const respuesta = await guardarNoticiasNuevasDB(datos);
-    res.status(200).json(respuesta);
+     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    // const respuesta = await guardarNoticiasNuevasDB(datos);
+    logger.error({datos, ms: ip}, "error inesperado")
+    res.status(200).json({respuesta: "respuesta"});
   };
 }
 

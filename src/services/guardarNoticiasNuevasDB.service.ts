@@ -1,22 +1,21 @@
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
-import NoticiasRepository from '../noticias.repository';
+import logger from '../logger';
+import NoticiasRepository from '../repository/noticias.repository';
 
 const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
   const noticiasRepository = new NoticiasRepository();
-  console.log('borrando noticias de un día de antigüedad');
 
   // borrado de noticias con un día de antigüedad
   const ahora = new Date();
   const haceUnDía = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+
   const borradoNoticiasAntiguas = await noticiasRepository.borrarNoticiasAntiguas(haceUnDía);
 
-  console.log(
+  logger.info(
     borradoNoticiasAntiguas.deletedCount > 0
       ? `Se borraron noticias antigüas: ${borradoNoticiasAntiguas.deletedCount}`
       : 'No se encontraron noticias antigüas'
   );
-
-  console.log('guardando ');
 
   // se obtienen los parámetros para hacer las combinaciones para la comparación con el Index
   const combinacionesIndex = datosAGuardar.map((noticia) => ({
@@ -25,9 +24,10 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
     enlaceNoticia: noticia.enlaceNoticia,
     fechaPublicacion: noticia.fechaPublicacion,
   }));
-  
+
   // se obtienen los Index existentes en base de datos
-  const identificadoresExistentes = await noticiasRepository.obtenerIdentificadoresExistentes(combinacionesIndex);
+  const identificadoresExistentes =
+    await noticiasRepository.obtenerIdentificadoresExistentes(combinacionesIndex);
 
   // se crea un Set todos los datos de los parámetros del Index
   const existentesSet = new Set(
@@ -42,8 +42,16 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
     return !existentesSet.has(clave);
   });
 
+  logger.info(
+    noticiasFiltrasParaGuardar.length === 0
+      ? 'no hay noticias nuevas para guardar'
+      : 'Guardando Las noticias nuevas'
+  );
+
   // se guardan las noticias filtradas en base de datos
   const resultado = await noticiasRepository.guardarNoticias(noticiasFiltrasParaGuardar);
+  if(resultado.length > 0) logger.info("Noticias nuevas guardas")
+
   return resultado;
 };
 

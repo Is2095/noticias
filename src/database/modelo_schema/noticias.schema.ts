@@ -70,7 +70,7 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
       required: [true, 'Este elemento es necesario EN'],
       trim: true,
       minlength: [30, 'Error en el número de caracteres EN.MI'],
-      maxlength: [200, 'Error en el número de caracteres EN.MA'],
+      maxlength: [300, 'Error en el número de caracteres EN.MA'],
     },
     descripcionNoticia: {
       type: String,
