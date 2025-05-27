@@ -20,7 +20,7 @@ class NoticiasRepository {
       const doc = await model.save();
       resultado.push(doc);
     }
-    return resultado;
+    return resultado.length;
   }
 }
 

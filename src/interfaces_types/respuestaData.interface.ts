@@ -4,5 +4,5 @@ export interface IRespuestaData {
   page: number;
   limit: number;
   total: number;
-  data: IDatosEnriquecidos[];
+  data: IDatosEnriquecidos[] | null;
 }

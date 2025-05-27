@@ -104,7 +104,8 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
         validator: function (arr: Array<string>) {
           for (const cat of arr) {
             const isValid =
-              typeof cat === 'string' && cat.trim().length > 1 && cat.trim().length < 50;
+              typeof cat === 'string' && cat.trim().length > 1 && cat.trim().length < 60
+              ;
             if (!isValid) {
               console.error('sección inválida: ', cat);
               return false;

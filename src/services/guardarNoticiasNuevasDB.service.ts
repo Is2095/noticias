@@ -10,6 +10,7 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
   const haceUnDía = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
 
   const borradoNoticiasAntiguas = await noticiasRepository.borrarNoticiasAntiguas(haceUnDía);
+  const noticiasBorradas = borradoNoticiasAntiguas.deletedCount;
 
   logger.info(
     borradoNoticiasAntiguas.deletedCount > 0
@@ -50,9 +51,9 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
 
   // se guardan las noticias filtradas en base de datos
   const resultado = await noticiasRepository.guardarNoticias(noticiasFiltrasParaGuardar);
-  if(resultado.length > 0) logger.info("Noticias nuevas guardas")
+  if(resultado > 0) logger.info("Noticias nuevas guardas")
 
-  return resultado;
+  return {resultado, noticiasBorradas};
 };
 
 export default guardarNoticiasNuevasDB;
