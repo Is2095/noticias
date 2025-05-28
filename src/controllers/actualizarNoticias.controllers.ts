@@ -29,6 +29,7 @@ class ActualizarNoticiasController {
   };
 
   public buscarNoticiasNuevas = async (req: Request, res: Response): Promise<void> => {
+    
     const page = req.query.page ? parseInt(req.query.page as string) : 1
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10
 

@@ -1,6 +1,8 @@
 import NoticiasModel from '../database/modelo_schema/noticias.modelo';
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
 import { IRespuestaData } from '../interfaces_types/respuestaData.interface';
+import logger from '../logger';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
 class NoticiasRepository {
   async borrarNoticiasAntiguas(fechaLimite: Date) {
@@ -24,11 +26,26 @@ class NoticiasRepository {
     return resultado.length;
   }
   async buscarNoticiasEnDB({ page, limit }: { page: number; limit: number }) {
+    if (!page || !limit) throw new ClienteError('Error en los datos de paginación');
+
+    if (page) {
+      if (isNaN(page) || page < 1) {
+        logger.error('page incorrecto');
+        throw new ClienteError('Page o Limit incorrectos', 404);
+      }
+    }
+    if (limit) {
+      if (isNaN(limit) || limit < 0 || limit > 20) {
+        logger.error('limit incorrecto');
+        throw new ClienteError('Page o Limit incorrectos', 404);
+      }
+    }
     const data: IDatosEnriquecidos[] = await NoticiasModel.find()
       .skip((page - 1) * limit)
       .limit(limit);
 
     const total = await NoticiasModel.countDocuments();
+
     const datos: IRespuestaData = {
       page,
       limit,

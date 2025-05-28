@@ -8,7 +8,7 @@ const validarQueryGetNoticias = (req: Request, res: Response, next: NextFunction
 
   if (pageQuery !== undefined) {
     const page = parseInt(pageQuery as string) || 1;
-    if (isNaN(page) || page < 1) {
+    if (isNaN(page) || page < 0) {
       logger.error('page incorrecto');
       throw new ClienteError('Page o Limit incorrectos', 404);
     }
