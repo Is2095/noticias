@@ -10,18 +10,16 @@ export interface ResultadoGuardado {
 }
 
 export class BuscarNoticiasNuevasService {
-  
   public async buscarNoticiasNuevas(url: string): Promise<ResultadoGuardado> {
-
     logger.info('buscando noticias RSS XML');
     const respuesta = await pedirDatosRSSCMLElPais(url);
-    
+
     logger.info('normalizando la información');
-    const respuestaNormalizada = normalizarDatos(respuesta);
-    
+    const respuestaNormalizada = normalizarDatos(respuesta);    
+
     logger.info('enriquesiendo la información');
     const respuestaEnriquecida = enriquecerDatos(respuestaNormalizada, url);
-    
+
     const resultadoGuardadoNoticias = await guardarNoticiasNuevasDB(respuestaEnriquecida);
 
     return resultadoGuardadoNoticias;

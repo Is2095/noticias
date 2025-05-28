@@ -19,7 +19,7 @@ class ActualizarNoticiasController {
             ? 'Las noticias están actualizadas'
             : `Se actualizaron: ${data.resultado} noticias nuevas`,
           data.noticiasBorradas === 0
-            ? 'No hay noticias antigúas'
+            ? 'No hay noticias antigüas'
             : `${data.noticiasBorradas} elementos desactualizados fueron eliminados `,
     ]
     

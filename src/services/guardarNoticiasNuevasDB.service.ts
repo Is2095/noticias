@@ -1,8 +1,15 @@
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
 import logger from '../logger';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 import NoticiasRepository from '../repository/noticias.repository';
 
 const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
+
+  if(datosAGuardar.length === 0) {
+    logger.error("No hay datos para guardar")
+    throw new ClienteError("Fallo en los datos a guardar", 404)
+  }
+
   const noticiasRepository = new NoticiasRepository();
 
   // borrado de noticias con un día de antigüedad

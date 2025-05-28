@@ -3,9 +3,13 @@ import { XMLParser } from 'fast-xml-parser';
 import { INoticiasXml } from '../interfaces_types/datosXml.interface';
 import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 import logger from '../logger';
+import env from '../config/manejo_VE';
 
 const pedirDatosRSSCMLElPais = async (url: string): Promise<INoticiasXml> => {
   const parser = new XMLParser();
+  
+  if(typeof url !== 'string' || !env.urlNoticiasXML.includes(url)) throw new ClienteError('Url no reconocida fe', 404)
+  
   try {
     const { data } = await axios.get(url);
     const respuestaJson = parser.parse(data).rss;

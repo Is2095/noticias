@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import env from '../../config/manejo_VE';
 
 interface PalabrasClaves {
   titulo: string[];
@@ -104,8 +105,7 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
         validator: function (arr: Array<string>) {
           for (const cat of arr) {
             const isValid =
-              typeof cat === 'string' && cat.trim().length > 1 && cat.trim().length < 60
-              ;
+              typeof cat === 'string' && cat.trim().length > 1 && cat.trim().length < 60;
             if (!isValid) {
               console.error('sección inválida: ', cat);
               return false;
@@ -130,6 +130,10 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
       required: [true, 'Este elemento es necesario Fue'],
       minlength: [50, 'Error en el formato de la fuente Fue-MI'],
       maxlength: [85, 'Error en el formato de la fuente Fue-MA'],
+      enum: {
+        values: env.urlNoticiasXML,
+        message: 'Url no reconocida',
+      },
     },
     identificadorUnico: {
       type: String,

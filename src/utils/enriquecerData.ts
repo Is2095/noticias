@@ -1,11 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
+import env from '../config/manejo_VE';
 import { IDatosNormalizados } from '../interfaces_types/datosNormalizados.interface';
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
+import logger from '../logger';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
 const enriquecerDatos = (
   datos: IDatosNormalizados[],
   urlFuenteInfo: string
 ): IDatosEnriquecidos[] => {
+  if (datos.length === 0 || !env.urlNoticiasXML.includes(urlFuenteInfo)) {
+    logger.error(datos.length === 0 ? 'No hay datos' : 'Url no existe');
+    throw new ClienteError('Fallo en el enriquesimiento de datos', 404);
+  }
   const noticiasEnriquecidas = datos.map((item) => ({
     ...item,
     fechaYHoraIngestion: new Date(),
@@ -13,12 +20,11 @@ const enriquecerDatos = (
     identificadorUnico: uuidv4(),
     palabrasClaves: extraerPalabrasClaves(item.titulo, item.descripcionNoticia),
   }));
-  
+
   return noticiasEnriquecidas;
 };
 
 const extraerPalabrasClaves = (textoTitulo: string, textoDescripcion: string) => {
-  
   const palabrasTitulo = textoTitulo.split(/\s+/);
   const primerasPalabrasTitulo = palabrasTitulo.slice(0, 3).join(' ').toLowerCase();
   const restoTitulo = palabrasTitulo.slice(3);

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import ActualizarNoticiasController from '../controllers/actualizarNoticias.controllers';
+import validarUrlXML from '../middlewares/url_post.middleares';
 
 const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
@@ -46,7 +47,7 @@ router.get('/news/:id', actualizarNoticiasController.buscarNoticiaPorId);
  *                   nullable: true
  *                   example: null
  */
-router.post('/news/fetch', actualizarNoticiasController.cargarNoticiasNuevas);
+router.post('/news/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
 router.delete('/news/:id', actualizarNoticiasController.eliminarNoticiaPorId);
 
 export default router;
