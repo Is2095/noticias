@@ -4,5 +4,6 @@ export interface IRespuestaData {
   page: number;
   limit: number;
   total: number;
-  data: IDatosEnriquecidos[] | null;
+  totalPage: number;
+  noticias: IDatosEnriquecidos[] | null;
 }

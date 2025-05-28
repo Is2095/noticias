@@ -6,6 +6,135 @@ const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
 
 router.post('/news/pruebas', actualizarNoticiasController.pruebas)
+/**
+ * @swagger
+ * /news:
+ *   get:
+ *     summary: Obtener todas las noticias paginadas
+ *     tags: [News]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *         description: Cantidad de noticias por página
+ *     responses:
+ *       200:
+ *         description: Lista de noticias paginadas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: ""
+ *                 noticias:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 40
+ *                     limit:
+ *                       type: integer
+ *                       example: 2
+ *                     total:
+ *                       type: integer
+ *                       example: 231
+ *                     totalPage:
+ *                       type: integer
+ *                       example: 116
+ *                     noticias:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Noticia'
+ *
+ * components:
+ *   schemas:
+ *     Noticia:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "68361723c8920faa365f76e8"
+ *         tituloPais:
+ *           type: string
+ *           example: "EL PAÍS Edición Chile: El periódico global en EL PAÍS"
+ *         titulo:
+ *           type: string
+ *           example: "Un atentado al corazón del Gobierno de Ciudad de México..."
+ *         enlaceNoticia:
+ *           type: string
+ *           format: uri
+ *           example: "https://elpais.com/..."
+ *         descripcionNoticia:
+ *           type: string
+ *           example: "Las autoridades siguen sin detener a los implicados..."
+ *         fechaPublicacion:
+ *           type: string
+ *           example: "Sun, 25 May 2025 02:14:40 GMT"
+ *         imagen:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uri
+ *           example:
+ *             - "https://imagenes.elpais.com/imagen1.jpg"
+ *             - "https://imagenes.elpais.com/imagen2.jpg"
+ *         seccionOCategoria:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["méxico", "violencia en méxico"]
+ *         fechaYHoraIngestion:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-05-27T19:48:51.332Z"
+ *         fuente:
+ *           type: string
+ *           format: uri
+ *           example: "https://feeds.elpais.com/..."
+ *         identificadorUnico:
+ *           type: string
+ *           format: uuid
+ *           example: "9f02d9b2-497a-4c8a-a0ea-a5acab538085"
+ *         palabrasClaves:
+ *           type: object
+ *           properties:
+ *             titulo:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["un atentado al", "gobierno", "ciudad"]
+ *             descripcion:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["las autoridades siguen", "ximena"]
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-05-27T19:48:51.874Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-05-27T19:48:51.874Z"
+ *         __v:
+ *           type: integer
+ *           example: 0
+ */
 router.get('/news', actualizarNoticiasController.buscarNoticiasNuevas);
 router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
 router.get('/news/:id', actualizarNoticiasController.buscarNoticiaPorId);

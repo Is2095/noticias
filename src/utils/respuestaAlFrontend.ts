@@ -6,12 +6,12 @@ const RespuestaAlFrontend = (
   statusCode: number,
   error: boolean,
   message: string | Array<string>,
-  data: IRespuestaData | null
+  noticias: IRespuestaData | null
 ) => {
   res.status(statusCode).json({
     error,
     message,
-    data,
+    noticias,
   });
 };
 export default RespuestaAlFrontend;
