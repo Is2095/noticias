@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import NoticiasModel from '../database/modelo_schema/noticias.modelo';
 import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
 import { IRespuestaData } from '../interfaces_types/respuestaData.interface';
@@ -54,6 +55,13 @@ class NoticiasRepository {
       noticias: data,
     };
     return datos;
+  }
+  async buscarNoticiaPorId({id}: {id: string}): Promise<IDatosEnriquecidos | null> {
+
+    if(!Types.ObjectId.isValid(id))  throw new ClienteError('Id de noticia no encontrado')
+      
+    const noticia: IDatosEnriquecidos | null = await NoticiasModel.findById({_id: id})
+    return noticia;
   }
 }
 

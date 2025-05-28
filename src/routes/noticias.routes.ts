@@ -138,7 +138,50 @@ router.post('/news/pruebas', actualizarNoticiasController.pruebas)
  */
 router.get('/news', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiasNuevas);
 router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
-router.get('/news/:id', actualizarNoticiasController.buscarNoticiaPorId);
+/**
+ * @swagger
+ * /news/{id}:
+ *   get:
+ *     summary: Obtener una noticia por ID
+ *     description: Devuelve una única noticia según su ID de MongoDB
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la noticia (MongoDB ObjectId)
+ *         schema:
+ *           type: string
+ *           example: "683756cbf626efae2fdb4019"
+ *     responses:
+ *       200:
+ *         description: Noticia encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: ""
+ *                 noticia:
+ *                   $ref: '#/components/schemas/Noticia'
+ *       400:
+ *         description: ID inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorRespuesta'
+ *       404:
+ *         description: Noticia no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorRespuesta'
+ */
+router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
  * /news/fetch:

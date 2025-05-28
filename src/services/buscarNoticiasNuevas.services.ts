@@ -1,3 +1,4 @@
+import { IDatosEnriquecidos } from '../interfaces_types/noticiasEnriquecidas.interface';
 import { IRespuestaData } from '../interfaces_types/respuestaData.interface';
 import logger from '../logger';
 import pedirDatosRSSCMLElPais from '../peticionesFetcheres/RSS_XML_Fetcher';
@@ -33,10 +34,28 @@ export class BuscarNoticiasNuevasService {
     page: number;
     limit: number;
   }): Promise<IRespuestaData> {
-    
     logger.info('Pidiendo data a la base de datos');
     const noticiasRepository = new NoticiasRepository();
     const datos: IRespuestaData = await noticiasRepository.buscarNoticiasEnDB({ page, limit });
     return datos;
+  }
+
+  public async buscarNoticiaPorId({ id }: { id: string }): Promise<IRespuestaData | null> {
+    logger.info('Buscando noticia por id especíico');
+    const noticiasRepository = new NoticiasRepository();
+
+    const data: IDatosEnriquecidos | null = await noticiasRepository.buscarNoticiaPorId({ id });
+
+    if (data) {
+      const respuesta: IRespuestaData = {
+        page: 1,
+        limit: 1,
+        total: 1,
+        totalPage: 1,
+        noticias: [data],
+      };
+      return respuesta;
+    }
+    return null;
   }
 }

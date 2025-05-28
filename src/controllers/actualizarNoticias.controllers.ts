@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
+import { IRespuestaData } from '../interfaces_types/respuestaData.interface';
 import logger from '../logger';
 import { BuscarNoticiasNuevasService } from '../services/buscarNoticiasNuevas.services';
 import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
-import { IRespuestaData } from '../interfaces_types/respuestaData.interface';
 
 class ActualizarNoticiasController {
   public cargarNoticiasNuevas = async (req: Request, res: Response): Promise<void> => {
@@ -29,18 +29,25 @@ class ActualizarNoticiasController {
   };
 
   public buscarNoticiasNuevas = async (req: Request, res: Response): Promise<void> => {
-    
-    const page = req.query.page ? parseInt(req.query.page as string) : 1
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10
+    const page = req.query.page ? parseInt(req.query.page as string) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
     const buscarNoticiasALaDBService = new BuscarNoticiasNuevasService();
-    const noticias: IRespuestaData = await buscarNoticiasALaDBService.buscarNoticiasEnDB({page, limit})
-    
-    return RespuestaAlFrontend(res, 200, false, '', noticias)
+    const noticias: IRespuestaData = await buscarNoticiasALaDBService.buscarNoticiasEnDB({
+      page,
+      limit,
+    });
+
+    return RespuestaAlFrontend(res, 200, false, '', noticias);
   };
 
   public buscarNoticiaPorId = async (req: Request, res: Response): Promise<void> => {
-    res.status(200).send('buscar noticia por ID');
+    const { id } = req.params;
+
+    const buscarNoticiasALaDBService = new BuscarNoticiasNuevasService();
+    const noticia = await buscarNoticiasALaDBService.buscarNoticiaPorId({ id });
+    if (noticia) return RespuestaAlFrontend(res, 200, false, '', noticia);
+    RespuestaAlFrontend(res, 404, false, 'No existe la noticia solicitada', null);
   };
 
   public buscarNoticiaPorPalabra = async (req: Request, res: Response): Promise<void> => {
