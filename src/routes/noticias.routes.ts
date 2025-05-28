@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import ActualizarNoticiasController from '../controllers/actualizarNoticias.controllers';
-import validarUrlXML from '../middlewares/url_post.middleares';
+import validarUrlXML from '../middlewares/url_post.middlewares';
+import validarQueryGetNoticias from '../middlewares/getNoticias.middlewares';
 
 const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
@@ -135,7 +136,7 @@ router.post('/news/pruebas', actualizarNoticiasController.pruebas)
  *           type: integer
  *           example: 0
  */
-router.get('/news', actualizarNoticiasController.buscarNoticiasNuevas);
+router.get('/news', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiasNuevas);
 router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
 router.get('/news/:id', actualizarNoticiasController.buscarNoticiaPorId);
 /**
