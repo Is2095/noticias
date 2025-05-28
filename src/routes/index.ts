@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { MongoError } from 'mongodb';
 import mongoose, { MongooseError } from 'mongoose';
 import morgan from 'morgan';
@@ -11,10 +12,29 @@ import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 import routerNoticias from './noticias.routes';
 
 export const configuracionRutas = (app: Application): void => {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 50,
+    message: {
+      error: true,
+      message: 'Exceso de peticiones',
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request): string => req.ip || '',
+  });
+
+  app.set('trust proxy', true);
+  app.use(limiter);
   app.disable('x-powered-by');
   app.use(cors());
   app.use(express.json());
   app.use(morgan('dev'));
+
+  app.use((req, res, next) => {
+    console.log('Petición permitida desde IP:', req.ip);
+    next();
+  });
 
   app.use((_req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
