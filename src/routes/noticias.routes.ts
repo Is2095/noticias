@@ -9,7 +9,7 @@ const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
 
 const deleteLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 30 minutos
+  windowMs: 30 * 60 * 1000, // 30 minutos
   max: 2, // Máximo 2 peticiones
   standardHeaders: true,
   legacyHeaders: false,
@@ -234,6 +234,30 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  */
 router.post('/news/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
 router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
+/**
+ * @swagger
+ * /news/{id}:
+ *   delete:
+ *     summary: Elimina una noticia por su ID
+ *     tags:
+ *       - Recursos
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la noticia a eliminar
+ *     responses:
+ *       200:
+ *         description: Noticia eliminada correctamente
+ *       404:
+ *         description: Noticia no encontrada
+ *       429:
+ *         description: Límite de eliminaciones alcanzado
+ *       500:
+ *         description: Error del servidor
+ */
 router.delete(
   '/news/:id',
   deleteLimiter,
