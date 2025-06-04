@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import ActualizarNoticiasController from '../controllers/actualizarNoticias.controllers';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 import validarQueryGetNoticias from '../middlewares/getNoticias.middlewares';
 import validarUrlXML from '../middlewares/url_post.middlewares';
-import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
 const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
@@ -14,7 +14,7 @@ const deleteLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (_req, _res, next) => {
-    next(new ClienteError('Límite de eliminaciones alcanzado.'))
+    next(new ClienteError('Límite de eliminaciones alcanzado.'));
   },
 });
 
@@ -24,7 +24,7 @@ router.post('/news/pruebas', actualizarNoticiasController.pruebas);
  * /news:
  *   get:
  *     summary: Obtener todas las noticias paginadas
- *     tags: [News]
+ *     tags: [news]
  *     parameters:
  *       - in: query
  *         name: page
@@ -155,6 +155,7 @@ router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra)
  * /news/{id}:
  *   get:
  *     summary: Obtener una noticia por ID
+ *     tags: [news]
  *     description: Devuelve una única noticia según su ID de MongoDB
  *     parameters:
  *       - in: path
@@ -199,9 +200,8 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  * /news/fetch:
  *   post:
  *     summary: Ingestión de noticias desde feeds RSS
+ *     tags: [news]
  *     description: Recibe una URL de RSS en el cuerpo del request para procesar noticias.
- *     tags:
- *       - Noticias
  *     requestBody:
  *       required: true
  *       content:
@@ -233,14 +233,48 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  *                   example: null
  */
 router.post('/news/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
+/**
+ * @swagger
+ * /news/{id}:
+ *   get:
+ *     summary: Obtiene una noticia por su ID
+ *     tags: [news]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la noticia a buscar
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Noticia encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 titulo:
+ *                   type: string
+ *                 descripcion:
+ *                   type: string
+ *                 fechaPublicacion:
+ *                   type: string
+ *                   format: date-time
+ *       404:
+ *         description: Noticia no encontrada
+ *       500:
+ *         description: Error del servidor
+ */
 router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
  * /news/{id}:
  *   delete:
  *     summary: Elimina una noticia por su ID
- *     tags:
- *       - Recursos
+ *     tags: [news]
  *     parameters:
  *       - in: path
  *         name: id
