@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { IRespuestaData } from '../interfaces_types/respuestaData.interface';
 import logger from '../logger';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 import { BuscarNoticiasNuevasService } from '../services/buscarNoticiasNuevas.services';
 import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 
@@ -19,7 +20,7 @@ class ActualizarNoticiasController {
     const resultado = [
       data.resultado === 0
         ? 'Las noticias están actualizadas'
-        : `Se actualizaron: ${data.resultado} noticias nuevas`,
+        : `Se actualizaron: ${data.resultado} noticias nuevas, Total noticias existentes: ${data.totalNoticiasExistentes}`,
       data.noticiasBorradas === 0
         ? 'No hay noticias antigüas'
         : `${data.noticiasBorradas} elementos desactualizados fueron eliminados `,
@@ -55,7 +56,15 @@ class ActualizarNoticiasController {
   };
 
   public eliminarNoticiaPorId = async (req: Request, res: Response): Promise<void> => {
-    res.status(200).send('eliminar noticia por su ID');
+    const { id } = req.params;
+    const buscarNoticiasALaDBService = new BuscarNoticiasNuevasService();
+    const borradoNoticiaPorId = await buscarNoticiasALaDBService.eliminarNoticiaPorId({ id });
+
+    if (borradoNoticiaPorId === null || borradoNoticiaPorId?.noticias === undefined) {
+      throw new ClienteError('Noticia no encontrada para ser borrada');
+    }
+    logger.info(borradoNoticiaPorId);
+    RespuestaAlFrontend(res, 200, false, 'Noticia eliminada', borradoNoticiaPorId);
   };
 
   public pruebas = async (req: Request, res: Response): Promise<void> => {

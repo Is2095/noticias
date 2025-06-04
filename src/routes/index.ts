@@ -10,21 +10,22 @@ import ManejadorErroresMongoose from '../manejador_de_errores/manejo_de_errores/
 import specs from '../swagger/swagger';
 import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 import routerNoticias from './noticias.routes';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
 export const configuracionRutas = (app: Application): void => {
   const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 10 * 60 * 1000,
     max: 50,
-    message: {
-      error: true,
-      message: 'Exceso de peticiones',
-    },
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req: Request): string => req.ip || '',
+    handler: (req, res, next) => {
+      next(new ClienteError('Exceso de peticiones'))
+    }
+
   });
 
-  app.set('trust proxy', true);
+  app.set('trust proxy', 1);
   app.use(limiter);
   app.disable('x-powered-by');
   app.use(cors());
@@ -49,6 +50,9 @@ export const configuracionRutas = (app: Application): void => {
   app.use('/doc', swaggerUI.serve, swaggerUI.setup(specs));
 
   app.use('/', routerNoticias);
+  app.use((_req, _res, next) => {
+    next(new ClienteError("ruta no encontrada"))
+  })
   app.use(
     (
       err: ErrorClienteError | MongoError | MongooseError,

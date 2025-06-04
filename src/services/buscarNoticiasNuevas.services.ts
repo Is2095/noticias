@@ -10,6 +10,7 @@ import guardarNoticiasNuevasDB from './guardarNoticiasNuevasDB.service';
 export interface ResultadoGuardado {
   resultado: number;
   noticiasBorradas: number;
+  totalNoticiasExistentes: number;
 }
 
 export class BuscarNoticiasNuevasService {
@@ -46,6 +47,22 @@ export class BuscarNoticiasNuevasService {
 
     const data: IDatosEnriquecidos | null = await noticiasRepository.buscarNoticiaPorId({ id });
 
+    if (data) {
+      const respuesta: IRespuestaData = {
+        page: 1,
+        limit: 1,
+        total: 1,
+        totalPage: 1,
+        noticias: [data],
+      };
+      return respuesta;
+    }
+    return null;
+  }
+  public async eliminarNoticiaPorId({ id }: { id: string }): Promise<IRespuestaData | null> {
+    const noticiasRepository = new NoticiasRepository();
+    const data: IDatosEnriquecidos | null =
+      await noticiasRepository.buscarYEliminarNoticiaPorIdEnDB({ id });
     if (data) {
       const respuesta: IRespuestaData = {
         page: 1,

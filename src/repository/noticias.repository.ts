@@ -45,7 +45,8 @@ class NoticiasRepository {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await NoticiasModel.countDocuments();
+    const total = await this.contarNoticiasExistentes();
+    // const total = await NoticiasModel.countDocuments();
 
     const datos: IRespuestaData = {
       page,
@@ -56,12 +57,25 @@ class NoticiasRepository {
     };
     return datos;
   }
-  async buscarNoticiaPorId({id}: {id: string}): Promise<IDatosEnriquecidos | null> {
+  async buscarNoticiaPorId({ id }: { id: string }): Promise<IDatosEnriquecidos | null> {
+    if (!Types.ObjectId.isValid(id)) throw new ClienteError('Id de noticia no encontrado');
 
-    if(!Types.ObjectId.isValid(id))  throw new ClienteError('Id de noticia no encontrado')
-      
-    const noticia: IDatosEnriquecidos | null = await NoticiasModel.findById({_id: id})
+    const noticia: IDatosEnriquecidos | null = await NoticiasModel.findById({ _id: id });
     return noticia;
+  }
+  async buscarYEliminarNoticiaPorIdEnDB({
+    id,
+  }: {
+    id: string;
+  }): Promise<IDatosEnriquecidos | null> {
+    if (!Types.ObjectId.isValid(id)) throw new ClienteError('Id de noticia no encontrado');
+    const eliminadoDeNoticiaPorId: IDatosEnriquecidos | null =
+      await NoticiasModel.findByIdAndDelete({ _id: id });
+    return eliminadoDeNoticiaPorId;
+  }
+  async contarNoticiasExistentes(): Promise<number> {
+    const total = await NoticiasModel.countDocuments();
+    return total;
   }
 }
 

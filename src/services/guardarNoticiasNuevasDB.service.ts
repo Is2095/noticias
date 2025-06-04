@@ -58,9 +58,10 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
 
   // se guardan las noticias filtradas en base de datos
   const resultado = await noticiasRepository.guardarNoticias(noticiasFiltrasParaGuardar);
+  const totalNoticiasExistentes = await noticiasRepository.contarNoticiasExistentes()
   if(resultado > 0) logger.info("Noticias nuevas guardas")
 
-  return {resultado, noticiasBorradas};
+  return {resultado, totalNoticiasExistentes, noticiasBorradas};
 };
 
 export default guardarNoticiasNuevasDB;

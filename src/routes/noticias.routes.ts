@@ -1,12 +1,24 @@
 import { Router } from 'express';
+import { rateLimit } from 'express-rate-limit';
 import ActualizarNoticiasController from '../controllers/actualizarNoticias.controllers';
-import validarUrlXML from '../middlewares/url_post.middlewares';
 import validarQueryGetNoticias from '../middlewares/getNoticias.middlewares';
+import validarUrlXML from '../middlewares/url_post.middlewares';
+import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
 const router: Router = Router();
 const actualizarNoticiasController = new ActualizarNoticiasController();
 
-router.post('/news/pruebas', actualizarNoticiasController.pruebas)
+const deleteLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 30 minutos
+  max: 2, // Máximo 2 peticiones
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, _res, next) => {
+    next(new ClienteError('Límite de eliminaciones alcanzado.'))
+  },
+});
+
+router.post('/news/pruebas', actualizarNoticiasController.pruebas);
 /**
  * @swagger
  * /news:
@@ -214,13 +226,19 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Actualización de noticias actualizadas en base de datos
+ *                   example: Actualización de noticias en la base de datos
  *                 data:
  *                   type: string
  *                   nullable: true
  *                   example: null
  */
 router.post('/news/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
-router.delete('/news/:id', actualizarNoticiasController.eliminarNoticiaPorId);
+router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
+router.delete(
+  '/news/:id',
+  deleteLimiter,
+  validarQueryGetNoticias,
+  actualizarNoticiasController.eliminarNoticiaPorId
+);
 
 export default router;
