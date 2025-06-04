@@ -49,7 +49,7 @@ export const configuracionRutas = (app: Application): void => {
 
   app.use('/doc', swaggerUI.serve, swaggerUI.setup(specs));
 
-  app.use('/', routerNoticias);
+  app.use('/api/v1/news', routerNoticias);
   app.use((_req, _res, next) => {
     next(new ClienteError("ruta no encontrada"))
   })

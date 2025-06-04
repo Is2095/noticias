@@ -92,7 +92,7 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
       required: false,
       validate: function (arr: Array<string>) {
         const elPaisImageRegex =
-          /^(?!.*[,";<>*$])https:\/\/(imagenes|images)(\.[a-z]+)*\.elpais\.com\/resizer\/v2\/.+/;
+          /^(?!.*[,";<>*$])https:\/\/(imagenes|images)(\.[a-z]+)*\.elpais\.com\/resizer\/.+/;
         return arr.every((url: string) => elPaisImageRegex.test(url));
       },
       message: 'Imagen no válida I',

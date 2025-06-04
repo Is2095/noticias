@@ -6,7 +6,8 @@ const options = {
     info: {
       title: 'Noticias Diario El Pais',
       version: '1.0.0',
-      description: 'api con node, express, typescript, MongoDb, manejos archivo RSS Xml con buenas prácticas',
+      description:
+        'api con node, express, typescript, MongoDb, manejos archivo RSS Xml con buenas prácticas',
       contact: {
         name: 'Desarrollador',
       },
@@ -16,6 +17,30 @@ const options = {
           description: 'local server',
         },
       ],
+    },
+    components: {
+      schemas: {
+        ErrorRespuesta: {
+          type: 'object',
+          properties: {
+            error: {
+              type: 'boolean',
+              example: true,
+            },
+            message: {
+              type: 'string',
+              example: 'ruta no encontrada',
+            },
+            noticias: {
+              type: ['array', 'null'],
+              items: {
+                type: 'object',
+              },
+              example: null,
+            },
+          },
+        },
+      },
     },
   },
   apis: ['./src/routes/*.ts'],

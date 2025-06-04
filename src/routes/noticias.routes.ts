@@ -18,7 +18,7 @@ const deleteLimiter = rateLimit({
   },
 });
 
-router.post('/news/pruebas', actualizarNoticiasController.pruebas);
+router.post('/pruebas', actualizarNoticiasController.pruebas);
 /**
  * @swagger
  * /news:
@@ -148,8 +148,8 @@ router.post('/news/pruebas', actualizarNoticiasController.pruebas);
  *           type: integer
  *           example: 0
  */
-router.get('/news', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiasNuevas);
-router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
+router.get('/', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiasNuevas);
+router.get('/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
 /**
  * @swagger
  * /news/{id}:
@@ -194,7 +194,7 @@ router.get('/news/search', actualizarNoticiasController.buscarNoticiaPorPalabra)
  *             schema:
  *               $ref: '#/components/schemas/ErrorRespuesta'
  */
-router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
+router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
  * /news/fetch:
@@ -212,7 +212,7 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  *               url:
  *                 type: string
  *                 description: URL del feed RSS a procesar.
- *                 example: https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+ *                 example: https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/argentina/portada
  *     responses:
  *       200:
  *         description: Noticias actualizadas exitosamente.
@@ -232,7 +232,7 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  *                   nullable: true
  *                   example: null
  */
-router.post('/news/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
+router.post('/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
 /**
  * @swagger
  * /news/{id}:
@@ -268,7 +268,7 @@ router.post('/news/fetch', validarUrlXML, actualizarNoticiasController.cargarNot
  *       500:
  *         description: Error del servidor
  */
-router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
+router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
  * /news/{id}:
@@ -293,7 +293,7 @@ router.get('/news/:id', validarQueryGetNoticias, actualizarNoticiasController.bu
  *         description: Error del servidor
  */
 router.delete(
-  '/news/:id',
+  '/:id',
   deleteLimiter,
   validarQueryGetNoticias,
   actualizarNoticiasController.eliminarNoticiaPorId
