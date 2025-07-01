@@ -21,7 +21,7 @@ const deleteLimiter = rateLimit({
 router.post('/pruebas', actualizarNoticiasController.pruebas);
 /**
  * @swagger
- * /news:
+ * /api/v1/news:
  *   get:
  *     summary: Obtener todas las noticias paginadas
  *     tags: [news]
@@ -149,10 +149,97 @@ router.post('/pruebas', actualizarNoticiasController.pruebas);
  *           example: 0
  */
 router.get('/', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiasNuevas);
+/**
+ * @swagger
+ * /api/v1/news/search:
+ *   get:
+ *     summary: Buscar noticias por palabra clave
+ *     tags: [news]
+ *     description: Devuelve una lista de noticias filtradas por título y/o rango de fechas.
+ *     parameters:
+ *       - in: query
+ *         name: titulo
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Palabra clave a buscar en el título.
+ *       - in: query
+ *         name: fechaFrom
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2025-06-01"
+ *         required: false
+ *         description: Desde la fecha (formato YYYY-MM-DD).
+ *       - in: query
+ *         name: fechaTo
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2025-06-30"
+ *         required: false
+ *         description: A la fecha (formato YYYY-MM-DD).
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         required: false
+ *         description: Número de página (paginación).
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         required: false
+ *         description: Cantidad de resultados por página.
+ *     responses:
+ *       200:
+ *         description: Lista de noticias encontradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: ""
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       example: 20
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     noticias:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Noticia'
+ *       400:
+ *         description: Parámetros inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorRespuesta'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorRespuesta'
+ */
 router.get('/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
 /**
  * @swagger
- * /news/{id}:
+ * /api/v1/news/{id}:
  *   get:
  *     summary: Obtener una noticia por ID
  *     tags: [news]
@@ -197,7 +284,7 @@ router.get('/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
 router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
- * /news/fetch:
+ * /api/v1/news/fetch:
  *   post:
  *     summary: Ingestión de noticias desde feeds RSS
  *     tags: [news]
@@ -235,7 +322,7 @@ router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarN
 router.post('/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
 /**
  * @swagger
- * /news/{id}:
+ * /api/v1/news/{id}:
  *   get:
  *     summary: Obtiene una noticia por su ID
  *     tags: [news]
@@ -271,7 +358,7 @@ router.post('/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticias
 router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
 /**
  * @swagger
- * /news/{id}:
+ * /api/v1/news/{id}:
  *   delete:
  *     summary: Elimina una noticia por su ID
  *     tags: [news]

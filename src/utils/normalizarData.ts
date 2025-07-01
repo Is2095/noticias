@@ -22,7 +22,7 @@ const normalizarDatos = (datos: INoticiasXml): IDatosNormalizados[] => {
             titulo: item.title,
             enlaceNoticia: item.link,
             descripcionNoticia: item.description,
-            fechaPublicacion: item.pubDate,
+            fechaPublicacion: new Date(item.pubDate).toISOString(),
             imagen: imagenes,
             seccionOCategoria: item.category,
           };

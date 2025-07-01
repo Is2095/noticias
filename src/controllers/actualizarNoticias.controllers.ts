@@ -41,6 +41,37 @@ class ActualizarNoticiasController {
 
     return RespuestaAlFrontend(res, 200, false, '', noticias);
   };
+  public buscarNoticiaPorPalabra = async (req: Request, res: Response): Promise<void> => {
+    const page = req.query.page ? parseInt(req.query.page as string) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const titulo = req.query.titulo ? String(req.query.titulo) : '';
+    const fechaFrom = req.query.from
+      ? new Date(req.query.fechaFrom as string)
+      : (() => {
+          const d = new Date();
+          d.setUTCHours(0, 0, 0, 0);
+          return d;
+        })();
+    const fechaTo = req.query.to
+      ? new Date(req.query.to as string)
+      : (() => {
+          const d = new Date();
+          d.setUTCHours(23, 59, 59, 999);
+          return d;
+        })();
+
+    const buscarNoticiasALaDBService = new BuscarNoticiasNuevasService();
+
+    const respuesta = await buscarNoticiasALaDBService.buscarNoticiaPorFiltros({
+      page,
+      limit,
+      titulo,
+      fechaFrom,
+      fechaTo,
+    });
+
+    return RespuestaAlFrontend(res, 200, false, '', respuesta);
+  };
 
   public buscarNoticiaPorId = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
@@ -49,10 +80,6 @@ class ActualizarNoticiasController {
     const noticia = await buscarNoticiasALaDBService.buscarNoticiaPorId({ id });
     if (noticia) return RespuestaAlFrontend(res, 200, false, '', noticia);
     RespuestaAlFrontend(res, 404, false, 'No existe la noticia solicitada', null);
-  };
-
-  public buscarNoticiaPorPalabra = async (req: Request, res: Response): Promise<void> => {
-    res.status(200).send('buscar noticia por palabra clave');
   };
 
   public eliminarNoticiaPorId = async (req: Request, res: Response): Promise<void> => {

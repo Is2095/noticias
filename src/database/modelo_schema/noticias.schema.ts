@@ -12,7 +12,7 @@ interface NoticiasDoc extends Document {
   titulo: string;
   enlaceNoticia: string;
   descripcionNoticia: string;
-  fechaPublicacion: string;
+  fechaPublicacion: Date;
   imagen: string[];
   seccionOCategoria: string[];
   fechaYHoraIngestion: Date;
@@ -81,11 +81,15 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
       maxlength: [400, 'Error en el número de caracteres DN.MA'],
     },
     fechaPublicacion: {
-      type: String,
+      type: Date,
       required: [true, 'Este elemento es necesario FP'],
-      trim: true,
-      minlength: [20, 'Error en el número de caracteres FP.MI'],
-      maxlength: [30, 'Error en el número de caracteres FP.MA'],
+      validate: {
+      validator: function (value) {
+        // Asegura que la fecha no sea en el futuro
+        return value <= new Date();
+      },
+      message: 'La fecha de publicación no es válida.'
+    }
     },
     imagen: {
       type: [String],
@@ -178,11 +182,3 @@ NoticiasSchema.pre('save', function (next) {
 });
 
 export default NoticiasSchema;
-/*
-`https://images.english.elpais.com/resizer/v2/VH5UJG2BOVGMVK2EZNDQNXA75Y.jpg?uth=1112470a36632d88b43857fb9ceceff13817bf0ac944eecbd1e1a1f4d1353e06,
- https://images.english.elpais.com/resizer/v2/YQTGEU5VNRCOZGW3LCGC5ITF4E.jpg?auth=3f122267c6f42ab83eae0344d62ca903c9ff5ad34e0d8a013b5dfb61207bfccf,
- https://images.english.elpais.com/resizer/v2/LAVEFYWUMNERNO3KCWOH7PED6A.jpg?auth=50266a79288a37f1a4fdbbc61b8253cb49c363f6614a4a147874c073cd177e3f,
- https://images.english.elpais.com/resizer/v2/OVFQJYESJZAVJP6MZG2A3RQDEU.jpg?auth=e302b4f410a6efd808d4ec716c965b73802f33714c96eb09c777d6427bd4f29c
- `
-
-*/

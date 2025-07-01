@@ -12,9 +12,9 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
 
   const noticiasRepository = new NoticiasRepository();
 
-  // borrado de noticias con un día de antigüedad
+  // borrado de noticias con cinco día de antigüedad
   const ahora = new Date();
-  const haceUnDía = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+  const haceUnDía = new Date(ahora.getTime() - 5 * 24 * 60 * 60 * 1000);
 
   const borradoNoticiasAntiguas = await noticiasRepository.borrarNoticiasAntiguas(haceUnDía);
   const noticiasBorradas = borradoNoticiasAntiguas.deletedCount;
