@@ -28,7 +28,7 @@ const ManejadorErroresMongoose = (error: MongooseError, errores: mon, res: Respo
   } else if (error instanceof MongoError) {
     logger.error(error.message, "Error MongoError")
     if (error.code === 11000) {
-      return res.status(400).json({ error: true, message: `Error en Base de Datos}` });
+      return res.status(400).json({ error: true, message: `Error en Base de Datos` });
     }
     return res.status(500).json({ error: true, message: `Error en Base de Datos}` });
   } else if (error instanceof mongoose.Error.CastError) {

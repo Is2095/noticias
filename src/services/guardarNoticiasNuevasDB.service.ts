@@ -12,11 +12,13 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
 
   const noticiasRepository = new NoticiasRepository();
 
-  // borrado de noticias con cinco día de antigüedad
+  // Variable que tendrá el parámetro de antigüedad de noticias viejas (en este caso 5 días)
   const ahora = new Date();
-  const haceUnDía = new Date(ahora.getTime() - 5 * 24 * 60 * 60 * 1000);
+  const haceCincoDias = new Date(ahora.getTime() - 5 * 24 * 60 * 60 * 1000);
 
-  const borradoNoticiasAntiguas = await noticiasRepository.borrarNoticiasAntiguas(haceUnDía);
+  // Se borran las noticias viejas
+  const borradoNoticiasAntiguas = await noticiasRepository.borrarNoticiasAntiguas(haceCincoDias);
+  // Se recupera el dato de la cantidad de noticias borradas
   const noticiasBorradas = borradoNoticiasAntiguas.deletedCount;
 
   logger.info(
@@ -25,7 +27,9 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
       : 'No se encontraron noticias antigüas'
   );
 
-  // se obtienen los parámetros para hacer las combinaciones para la comparación con el Index
+  // Proceso de guardado de las noticias teniendo en cuenta de no repetir noticias
+
+  // Se obtienen los parámetros para hacer las combinaciones para la comparación con el Index (búsqueda en base de datos indexadas)
   const combinacionesIndex = datosAGuardar.map((noticia) => ({
     tituloPais: noticia.tituloPais,
     titulo: noticia.titulo,
@@ -33,20 +37,20 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
     fechaPublicacion: noticia.fechaPublicacion,
   }));
 
-  // se obtienen los Index existentes en base de datos
+  // Se obtienen los Index existentes en base de datos (datos indexados en base de datos MongoDB)
   const identificadoresExistentes =
     await noticiasRepository.obtenerIdentificadoresExistentes(combinacionesIndex);
 
-  // se crea un Set todos los datos de los parámetros del Index
+  // Se crea un Set todos los datos de los parámetros del Index
   const existentesSet = new Set(
     identificadoresExistentes.map(
-      (n) => `${n.tituloPais}|${n.titulo}|${n.enlaceNoticia}|${n.fechaPublicacion}`
+      (n) => `${n.tituloPais}|${n.titulo}|${n.enlaceNoticia}|${new Date(n.fechaPublicacion).toISOString()}`
     )
   );
 
-  // se filtran las noticias entrantes que no estén en el set
+  // Se filtran las noticias entrantes que no estén en el set
   const noticiasFiltrasParaGuardar = datosAGuardar.filter((noticia) => {
-    const clave = `${noticia.tituloPais}|${noticia.titulo}|${noticia.enlaceNoticia}|${noticia.fechaPublicacion}`;
+    const clave = `${noticia.tituloPais}|${noticia.titulo}|${noticia.enlaceNoticia}|${new Date(noticia.fechaPublicacion).toISOString()}`;
     return !existentesSet.has(clave);
   });
 
@@ -56,11 +60,13 @@ const guardarNoticiasNuevasDB = async (datosAGuardar: IDatosEnriquecidos[]) => {
       : 'Guardando Las noticias nuevas'
   );
 
-  // se guardan las noticias filtradas en base de datos
+  // Se guardan las noticias filtradas en base de datos (sólo las que no están repetidas)
   const resultado = await noticiasRepository.guardarNoticias(noticiasFiltrasParaGuardar);
+  // Cuento las noticias existentes
   const totalNoticiasExistentes = await noticiasRepository.contarNoticiasExistentes()
   if(resultado > 0) logger.info("Noticias nuevas guardas")
 
+    // Retorno resultado del guardado de las noticias, total de noticias existentes y la cantidad de noticias borradas
   return {resultado, totalNoticiasExistentes, noticiasBorradas};
 };
 

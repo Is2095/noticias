@@ -64,7 +64,7 @@ const NoticiasSchema: Schema = new Schema<NoticiasDoc>(
       required: [true, 'Este elemento es necesario T'],
       trim: true,
       minlength: [10, 'Error en el número de caracteres T.MI'],
-      maxlength: [200, 'Error en el número de caracteres T.MA'],
+      maxlength: [300, 'Error en el número de caracteres T.MA'],
     },
     enlaceNoticia: {
       type: String,

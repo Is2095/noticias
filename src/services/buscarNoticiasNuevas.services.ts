@@ -17,14 +17,18 @@ export interface ResultadoGuardado {
 export class BuscarNoticiasNuevasService {
   public async buscarNoticiasNuevas(url: string): Promise<ResultadoGuardado> {
     logger.info('buscando noticias RSS XML');
+    // Pido las noticias
     const respuesta = await pedirDatosRSSCMLElPais(url);
 
     logger.info('normalizando la información');
+    // Los datos recibidos en json los normalizo
     const respuestaNormalizada = normalizarDatos(respuesta);
 
     logger.info('enriquesiendo la información');
+    // Coloco más datos en la información recibida
     const respuestaEnriquecida = enriquecerDatos(respuestaNormalizada, url);
 
+    // Guardo todo las noticias procesadas
     const resultadoGuardadoNoticias = await guardarNoticiasNuevasDB(respuestaEnriquecida);
 
     return resultadoGuardadoNoticias;
@@ -41,6 +45,7 @@ export class BuscarNoticiasNuevasService {
     if (!page || !limit) throw new ClienteError('Error en los datos de paginación');
 
     const noticiasRepository = new NoticiasRepository();
+    // por instancia del repository busco las noticias en la base de datos
     const datos: IRespuestaData = await noticiasRepository.buscarNoticiasEnDB({ page, limit });
     return datos;
   }
@@ -60,6 +65,7 @@ export class BuscarNoticiasNuevasService {
   }): Promise<IRespuestaData | null> {
     logger.info('Pidiendo data a la base de datos con filtros');
     const noticiasRepository = new NoticiasRepository();
+    // Envío los datos de paginación y filtros al repository
     const data: IRespuestaData | null = await noticiasRepository.buscarNoticiasConFiltros({
       page,
       limit,
@@ -74,9 +80,11 @@ export class BuscarNoticiasNuevasService {
     logger.info('Buscando noticia por id especíico');
     const noticiasRepository = new NoticiasRepository();
 
+    // Envío el id al repository
     const data: IDatosEnriquecidos | null = await noticiasRepository.buscarNoticiaPorId({ id });
 
     if (data) {
+      // Si se encontró la noticia se prepara la respuesta
       const respuesta: IRespuestaData = {
         page: 1,
         limit: 1,
@@ -91,9 +99,11 @@ export class BuscarNoticiasNuevasService {
   public async eliminarNoticiaPorId({ id }: { id: string }): Promise<IRespuestaData | null> {
     logger.info('Eliminando noticia por id');
     const noticiasRepository = new NoticiasRepository();
+    // Se envía el id al repository para eliminar la noticia 
     const data: IDatosEnriquecidos | null =
       await noticiasRepository.buscarYEliminarNoticiaPorIdEnDB({ id });
     if (data) {
+      // Se prepara la respuesta 
       const respuesta: IRespuestaData = {
         page: 1,
         limit: 1,

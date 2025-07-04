@@ -7,6 +7,7 @@ import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorPar
 
 class NoticiasRepository {
   async borrarNoticiasAntiguas(fechaLimite: Date) {
+    // Se eliminan todas las noticias que tengan la fechYHoraIngestion anterior a fechaLimite
     return await NoticiasModel.deleteMany({
       fechaYHoraIngestion: { $lt: fechaLimite },
     });
@@ -41,13 +42,15 @@ class NoticiasRepository {
         throw new ClienteError('Page o Limit incorrectos', 404);
       }
     }
+    // busco las noticias en la base de datos Mongo teniendo en cuenta page y limit para el paginado
     const data: IDatosEnriquecidos[] = await NoticiasModel.find()
       .skip((page - 1) * limit)
       .limit(limit);
 
+    // Cuento las noticias totales en base de datos 
     const total = await this.contarNoticiasExistentes();
-    // const total = await NoticiasModel.countDocuments();
 
+    // se prepara la respuesta con los datos necesarios
     const datos: IRespuestaData = {
       page,
       limit,
@@ -87,21 +90,22 @@ class NoticiasRepository {
 
     const filters: FilterQuery<IDatosEnriquecidos> = {};
 
+    // Valido el título y lo guardo en el filtro
     if (titulo) {
       if (typeof titulo === 'string') {
         if (/[$][\w]+|\.|[.*+?^${}()[\]|\\]/.test(titulo)) {
           logger.error('título inválid', titulo);
           throw new ClienteError('Palabra de búsqueda para título incorrecto', 404);
         }
-        const regex = new RegExp(titulo, 'i');        
+        const regex = new RegExp(titulo, 'i');
 
         filters.$or = [
           { seccionOCategoria: { $regex: regex } },
           { 'palabrasClaves.titulo': { $regex: regex } },
         ];
-        
       }
     }
+    // Valido la fecha from y guardo en el filtro 
     if (fechaFrom || fechaTo) {
       const dateFilter: FilterQuery<IDatosEnriquecidos> = {};
       if (fechaFrom) {
@@ -110,6 +114,7 @@ class NoticiasRepository {
           throw new ClienteError('Fecha inicial para la búsqueda incorrecta', 404);
         dateFilter.$gte = fromDate;
       }
+      // Valido fecha to y la guardo en el filtro
       if (fechaTo) {
         const toDate = new Date(fechaTo);
         if (isNaN(toDate.getTime()))
@@ -119,13 +124,16 @@ class NoticiasRepository {
       filters.fechaPublicacion = dateFilter;
     }
 
-    console.dir(filters, { depth: null });
-    
+    // imprime por consola el objeto complejo filters
+    // console.dir(filters, { depth: null });
+
+    // Busco en base de datos MongoDB las noticias con los filtros requeridos
     const noticias: IDatosEnriquecidos[] | null = await NoticiasModel.find(filters)
       .skip((page - 1) * limit)
       .limit(limit);
 
     if (noticias) {
+      // si hay noticias encontradas busco la cantidad de noticias en base de datos y preparo la respuesta con todos los datos requeridos
       const total = await this.contarNoticiasExistentes();
 
       const datos: IRespuestaData = {
@@ -141,8 +149,10 @@ class NoticiasRepository {
   }
 
   async buscarNoticiaPorId({ id }: { id: string }): Promise<IDatosEnriquecidos | null> {
+    // Se valida que el id sea un id válida para MongoDB
     if (!Types.ObjectId.isValid(id)) throw new ClienteError('Id de noticia no encontrado');
 
+    // Se busca en base de datos MongoDB la noticia con el id enviado
     const noticia: IDatosEnriquecidos | null = await NoticiasModel.findById({ _id: id });
     return noticia;
   }
@@ -151,12 +161,15 @@ class NoticiasRepository {
   }: {
     id: string;
   }): Promise<IDatosEnriquecidos | null> {
+    // Se valida que el id sea un id válido en MongoDB
     if (!Types.ObjectId.isValid(id)) throw new ClienteError('Id de noticia no encontrado');
+    // Buscar en base de datos MongoDB la noticia con el id y eliminarla
     const eliminadoDeNoticiaPorId: IDatosEnriquecidos | null =
       await NoticiasModel.findByIdAndDelete({ _id: id });
     return eliminadoDeNoticiaPorId;
   }
   async contarNoticiasExistentes(): Promise<number> {
+    // Se obtiene la cantidad de documentos en el modelo, de la base de datos MongoDB
     const total = await NoticiasModel.countDocuments();
     return total;
   }

@@ -2,6 +2,7 @@ import env from './config/manejo_VE';
 import connectMongo from './database/coneccionDBMongo/db_connect';
 import app from './server';
 
+// Función donde se levanta el server y la conección de la base de datos Mongodb
 const levantarServido = async () => {
   try {
     await connectMongo();

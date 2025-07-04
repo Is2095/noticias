@@ -8,10 +8,13 @@ import env from '../config/manejo_VE';
 const pedirDatosRSSCMLElPais = async (url: string): Promise<INoticiasXml> => {
   const parser = new XMLParser();
   
+  // Valido la url enviada
   if(typeof url !== 'string' || !env.urlNoticiasXML.includes(url)) throw new ClienteError('Url no reconocida fe', 404)
   
   try {
+    // Hago el pedido a la api
     const { data } = await axios.get(url);
+    // convierto la información XML a json
     const respuestaJson = parser.parse(data).rss;
     if (!respuestaJson) {
       throw new Error('No hay datos válidos para mostrar');

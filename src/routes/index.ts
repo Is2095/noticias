@@ -12,7 +12,11 @@ import RespuestaAlFrontend from '../utils/respuestaAlFrontend';
 import routerNoticias from './noticias.routes';
 import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorParaClienteGeneral';
 
+
+// Recibo server app y configuro las seguridades, límites, parámetros, manejadores de errores, entrada al backend, swagger
 export const configuracionRutas = (app: Application): void => {
+
+  // Se limita número de peticiones 50 cada 10 minutos
   const limiter = rateLimit({
     windowMs: 10 * 60 * 1000,
     max: 50,
@@ -25,10 +29,15 @@ export const configuracionRutas = (app: Application): void => {
 
   });
 
+  // Le dice a express que confíe en el primer proxy (para obtener la ip real del cliente)
   app.set('trust proxy', 1);
+  // usa rateLimit
   app.use(limiter);
+  // oculta el encabezado 'x-powered-by: express', sirve para no dar info de la tecnología usada en el backend
   app.disable('x-powered-by');
+  // habilitar cors
   app.use(cors());
+  // para el manejo de archivos json
   app.use(express.json());
   app.use(morgan('dev'));
 
@@ -47,12 +56,15 @@ export const configuracionRutas = (app: Application): void => {
     next();
   });
 
+  // Habilita documentación con swagger
   app.use('/doc', swaggerUI.serve, swaggerUI.setup(specs));
 
   app.use('/api/v1/news', routerNoticias);
+  // Error si la ruta con coincide con las que están programadas
   app.use((_req, _res, next) => {
     next(new ClienteError("ruta no encontrada"))
   })
+  // Manejo de errores.
   app.use(
     (
       err: ErrorClienteError | MongoError | MongooseError,

@@ -5,9 +5,12 @@ import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorPar
 import validarQueryGetNoticias from '../middlewares/getNoticias.middlewares';
 import validarUrlXML from '../middlewares/url_post.middlewares';
 
+// Creo una instancia de Router
 const router: Router = Router();
+// Creo una instancia de ActualizarNoticiasController
 const actualizarNoticiasController = new ActualizarNoticiasController();
 
+// Configura el límite de peticiones de una misma ip a 2 peticiones cada 30 minutos (para DELETE)
 const deleteLimiter = rateLimit({
   windowMs: 30 * 60 * 1000, // 30 minutos
   max: 2, // Máximo 2 peticiones
@@ -148,7 +151,9 @@ router.post('/pruebas', actualizarNoticiasController.pruebas);
  *           type: integer
  *           example: 0
  */
+// Endpoint para buscar noticias de la base de datos
 router.get('/', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiasNuevas);
+
 /**
  * @swagger
  * /api/v1/news/search:
@@ -236,7 +241,9 @@ router.get('/', validarQueryGetNoticias, actualizarNoticiasController.buscarNoti
  *             schema:
  *               $ref: '#/components/schemas/ErrorRespuesta'
  */
+// Endpoint para buscar noticias de la base de datos por palabra clave en titulo, fechaFrom a fechaTo
 router.get('/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
+
 /**
  * @swagger
  * /api/v1/news/{id}:
@@ -281,7 +288,9 @@ router.get('/search', actualizarNoticiasController.buscarNoticiaPorPalabra);
  *             schema:
  *               $ref: '#/components/schemas/ErrorRespuesta'
  */
+// Endpoint para buscar una noticia en la base de datos por medio de su id
 router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
+
 /**
  * @swagger
  * /api/v1/news/fetch:
@@ -319,43 +328,9 @@ router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarN
  *                   nullable: true
  *                   example: null
  */
+// Endpoint para buscar noticias XML de la api, y guardarlas en base de datos
 router.post('/fetch', validarUrlXML, actualizarNoticiasController.cargarNoticiasNuevas);
-/**
- * @swagger
- * /api/v1/news/{id}:
- *   get:
- *     summary: Obtiene una noticia por su ID
- *     tags: [news]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID de la noticia a buscar
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Noticia encontrada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 titulo:
- *                   type: string
- *                 descripcion:
- *                   type: string
- *                 fechaPublicacion:
- *                   type: string
- *                   format: date-time
- *       404:
- *         description: Noticia no encontrada
- *       500:
- *         description: Error del servidor
- */
-router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarNoticiaPorId);
+
 /**
  * @swagger
  * /api/v1/news/{id}:
@@ -379,6 +354,7 @@ router.get('/:id', validarQueryGetNoticias, actualizarNoticiasController.buscarN
  *       500:
  *         description: Error del servidor
  */
+// Endpoint que elimina una noticia de la base de datos por medio de su id
 router.delete(
   '/:id',
   deleteLimiter,

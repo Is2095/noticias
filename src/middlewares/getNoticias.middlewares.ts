@@ -4,6 +4,7 @@ import ClienteError from '../manejador_de_errores/erroresPersonalizados/ErrorPar
 import { Types } from 'mongoose';
 
 const validarQueryGetNoticias = (req: Request, res: Response, next: NextFunction) => {
+  // Middleware para la validación de las query
   const pageQuery = req.query.page;
   const limitQuery = req.query.limit;
   const {id} = req.params;
